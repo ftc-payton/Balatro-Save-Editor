@@ -7,17 +7,21 @@
 </head>
 <body>
     <h1>Balatro Save Editor</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="fileInput" name="file" required>
-        <button type="submit">Upload & Inflate</button>
-    </form>
+    <input type="file" id="fileInput" name="file" style="display: none;">
+    <button id="uploadInflateBtn">Choose File</button>
     <textarea id="editor" style="width:100%;height:200px;"></textarea>
-    <button id="deflateBtn">Deflate & Download</button>
+    <button id="deflateBtn">Download</button>
+    
     <script>
-        document.getElementById('uploadForm').onsubmit = async function(event) {
-            event.preventDefault();
+        document.getElementById('uploadInflateBtn').onclick = function() {
+            document.getElementById('fileInput').click();
+        };
+
+        document.getElementById('fileInput').onchange = async function(event) {
+            if (this.files.length === 0) return;
+            
             const formData = new FormData();
-            formData.append('file', document.getElementById('fileInput').files[0]);
+            formData.append('file', this.files[0]);
 
             const response = await fetch('/inflate', { method: 'POST', body: formData });
             const result = await response.json();
