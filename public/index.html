@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balatro Save Editor</title>
+</head>
+<body>
+    <h1>Balatro Save Editor</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" required>
+        <button type="submit">Upload & Inflate</button>
+    </form>
+    <textarea id="editor" style="width:100%;height:200px;"></textarea>
+    <button id="deflateBtn">Deflate & Download</button>
+    <script>
+        document.getElementById('uploadForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('file', document.getElementById('fileInput').files[0]);
+
+            const response = await fetch('/inflate', { method: 'POST', body: formData });
+            const result = await response.json();
+
+            if (result.success) {
+                document.getElementById('editor').value = result.content;
+            } else {
+                alert('Error inflating file');
+            }
+        };
+
+        document.getElementById('deflateBtn').onclick = async function() {
+            const content = document.getElementById('editor').value;
+            const response = await fetch('/deflate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'deflated.jkr';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('Error deflating file');
+            }
+        };
+    </script>
+</body>
+</html>
