@@ -33,12 +33,13 @@ app.post('/inflate', upload.single('file'), (req, res) => {
 
 app.post('/deflate', (req, res) => {
     const { content } = req.body;
-    const deflatedFilePath = path.join(__dirname, 'uploads', 'deflated.jkr');
+    const filename = req.query.filename || 'deflated.jkr';
+    const deflatedFilePath = path.join(__dirname, 'uploads', filename);
     
     try {
         const deflatedData = pako.deflateRaw(content);
         fs.writeFileSync(deflatedFilePath, deflatedData);
-        res.download(deflatedFilePath, 'deflated.jkr');
+        res.download(deflatedFilePath, filename);
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error deflating file', error });
     }

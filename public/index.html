@@ -11,8 +11,10 @@
     <button id="uploadInflateBtn">Choose File</button>
     <textarea id="editor" style="width:100%;height:200px;"></textarea>
     <button id="deflateBtn">Download</button>
-    
+
     <script>
+        let uploadedFilename = '';
+
         document.getElementById('uploadInflateBtn').onclick = function() {
             document.getElementById('fileInput').click();
         };
@@ -20,8 +22,10 @@
         document.getElementById('fileInput').onchange = async function(event) {
             if (this.files.length === 0) return;
             
+            const file = this.files[0];
+            uploadedFilename = file.name;  // Store the filename
             const formData = new FormData();
-            formData.append('file', this.files[0]);
+            formData.append('file', file);
 
             const response = await fetch('/inflate', { method: 'POST', body: formData });
             const result = await response.json();
@@ -35,17 +39,17 @@
 
         document.getElementById('deflateBtn').onclick = async function() {
             const content = document.getElementById('editor').value;
-            const response = await fetch('/deflate', {
+            const response = await fetch(`/deflate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content })
+                body: JSON.stringify({ content, filename: uploadedFilename })
             });
 
             if (response.ok) {
                 const blob = await response.blob();
                 const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
-                link.download = 'deflated.jkr';
+                link.download = uploadedFilename.replace(/\.[^/.]+$/, ".jkr") || 'deflated.jkr';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
