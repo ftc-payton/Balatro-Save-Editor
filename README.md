@@ -1,5 +1,5 @@
 # Balatro Save Editor
-just a simple thing i made in my free time. it looks bad, maybe ill make it look better eventually.
+allows you to edit .jkr balatro save files. it looks bad, maybe ill make it look better eventually.
 hosted at [balatro-save-editor.onrender.com](https://balatro-save-editor.onrender.com/) but slow because free tier
 ### Self-hosting
 1. install [node.js](https://nodejs.org/en/download)
